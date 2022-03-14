@@ -85,6 +85,9 @@ void alloc_new(alloc_t *alloc); // delete?
 void *alloc_alloc(alloc_t *alloc, size_t size);
 void alloc_free(alloc_t *alloc, void *ptr);
 
+int coord_to_pos(coord_t *coord, int gravity);
+coord_t coord_from_pos(int pos, int gravity, int size);
+
 void board_new(board_t *board, config_t *config); // delete?
 void state_new(state_t *state, board_t *board);
 void state_copy(state_t *state, state_t *other);
