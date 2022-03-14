@@ -21,7 +21,7 @@ int coord_to_pos(coord_t coord, gravity_t gravity)
 coord_t coord_from_pos(int pos, gravity_t gravity, int size)
 {
 	int q = -pos;
-	int r = size < size + pos ? size : size + pos;
+	int r = (size < size + pos ? size : size + pos) - 1;
 	int s = -(q + r);
 	switch (gravity) {
 	case north:
