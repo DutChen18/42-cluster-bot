@@ -86,14 +86,14 @@ struct state {
 struct moved_state {
 	state_t tmp;
 	state_t *state;
-	move_type_t type;
 	cell_t *cell;
+	move_type_t type;
 };
 
 struct move {
-	move_type_t type;
-	int8_t token;
 	size_t drop_index;
+	int8_t token;
+	move_type_t type;
 	gravity_t gravity;
 };
 

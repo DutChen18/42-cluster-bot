@@ -65,7 +65,8 @@ void state_make_move(moved_state_t *moved_state, state_t *state, move_t *move)
 	case move_type_drop:
 		moved_state->state = state;
 		moved_state->state->bags[moved_state->state->turn] -= 1;
-		moved_state->cell = state_get_empty(state, state->board->drop_cells[state->gravity][move->drop_index]);
+		moved_state->cell = moved_state->state->board->drop_cells[state->gravity][move->drop_index];
+		moved_state->state->tokens[moved_state->cell - moved_state->state->board->cells] = move->token;
 		break;
 	}
 	moved_state->state->turn = !moved_state->state->turn;
