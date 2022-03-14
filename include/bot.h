@@ -51,10 +51,10 @@ struct cell {
 struct board {
 	cell_t *cells;
 	size_t cell_count;
-	cell_t *drop_cells;
-	size_t drop_cell_count;
-	cell_t *gravity_cells;
-	size_t gravity_cell_count;
+	cell_t **drop_cells[6];
+	size_t drop_cell_count[6];
+	cell_t **gravity_cells[6];
+	size_t gravity_cell_count[6];
 	config_t *config;
 };
 
