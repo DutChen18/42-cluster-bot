@@ -4,6 +4,7 @@
 
 int main(void)
 {
+	alloc_new(&alloc);
 	printf("Hello, World!\n");
 	return EXIT_SUCCESS;
 }
