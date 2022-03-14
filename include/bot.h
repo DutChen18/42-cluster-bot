@@ -9,7 +9,17 @@ enum move_type {
 	move_type_drop,
 };
 
+enum gravity {
+	north,
+	north_east,
+	south_east,
+	south,
+	south_west,
+	north_west,
+};
+
 typedef enum move_type move_type_t;
+typedef enum gravity gravity_t;
 typedef struct alloc_node alloc_node_t;
 typedef struct alloc alloc_t;
 typedef struct config config_t;
@@ -41,6 +51,7 @@ struct config {
 	int grid_size;
 	int color_count;
 	int win_length;
+	int token_count;
 	coord_t *walls;
 	size_t wall_count;
 };
@@ -65,6 +76,7 @@ struct state {
 	int8_t *tokens;
 	int bags[2];
 	int turn;
+	gravity_t gravity;
 };
 
 struct moved_state {
@@ -78,7 +90,7 @@ struct move {
 	move_type_t type;
 	int8_t token;
 	int pos;
-	int gravity;
+	gravity_t gravity;
 };
 
 extern alloc_t alloc;
@@ -87,16 +99,15 @@ void alloc_new(alloc_t *alloc); // delete?
 void *alloc_alloc(alloc_t *alloc, size_t size);
 void alloc_free(alloc_t *alloc, void *ptr);
 
-int coord_to_pos(coord_t *coord, int gravity);
-coord_t coord_from_pos(int pos, int gravity, int size);
+int coord_to_pos(coord_t coord, gravity_t gravity);
+coord_t coord_from_pos(int pos, gravity_t gravity, int size);
 
 void board_new(board_t *board, config_t *config); // delete?
 void state_new(state_t *state, board_t *board);
 void state_copy(state_t *state, state_t *other);
 void state_delete(state_t *state);
 
-void state_move_drop(state_t *state, int pos, int8_t token);
-void state_move_gravity(state_t *state, int gravity);
+void state_move_gravity(state_t *state, gravity_t gravity);
 int state_winner(state_t *state);
 void state_make_move(moved_state_t *moved_state, state_t *state, move_t *move);
 void state_unmake_move(moved_state_t *moved_state);
