@@ -38,7 +38,7 @@ static void get_drop_cells(board_t *board, config_t *config, int gravity)
 					&& board->cells[j].coord.r == cur_coords.r
 					&& board->cells[j].coord.s == cur_coords.s) {
 						board->drop_cells[gravity][i] = &board->cells[j];
-						realloc(board->drop_cells[gravity], i);
+						realloc(board->drop_cells[gravity], i * sizeof(cell_t));
 						board->drop_cell_count[gravity] += 1;
 				}
 			}
@@ -56,7 +56,7 @@ static void get_gravity_cells(board_t *board, config_t *config, int gravity)
 			board->drop_cell_count[gravity] += 1;
 			board->gravity_cells[gravity][cell] = &board->cells[i];
 			cell += 1;
-			realloc(board->gravity_cells[gravity], cell);
+			realloc(board->gravity_cells[gravity], cell * sizeof(cell_t));
 		}
 	}
 }
