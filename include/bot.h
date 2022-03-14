@@ -31,16 +31,18 @@ struct alloc {
 	alloc_node_t *node;
 };
 
-struct config {
-	int grid_size;
-	int color_count;
-	int win_length;
-};
-
 struct coord {
 	int q;
 	int r;
 	int s;
+};
+
+struct config {
+	int grid_size;
+	int color_count;
+	int win_length;
+	coord_t *walls;
+	size_t wall_count;
 };
 
 struct cell {
