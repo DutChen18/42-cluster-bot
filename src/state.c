@@ -4,6 +4,8 @@ void state_new(state_t *state, board_t *board)
 {
 	state->board = board;
 	state->tokens = alloc_alloc(&alloc, sizeof(*state->tokens) * board->cell_count);
+	for (size_t i = 0; i < board->cell_count; i++)
+		state->tokens[i] = -1;
 	state->bags[0] = board->config->token_count * board->config->color_count;
 	state->bags[1] = board->config->token_count * board->config->color_count;
 	state->turn = 0;
