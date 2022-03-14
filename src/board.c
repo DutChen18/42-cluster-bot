@@ -1,5 +1,6 @@
 #include "bot.h"
 #include <stdlib.h>
+#include <stdio.h>
 
 static cell_t *board_get(board_t *board, int q, int r, int s)
 {
@@ -55,7 +56,7 @@ static void get_gravity_cells(board_t *board, config_t *config, int gravity)
 		if (board->cells[i].neighbors[gravity] == NULL) {
 			cell += 1;
 			board->gravity_cells[gravity] = realloc(board->gravity_cells[gravity], cell * sizeof(cell_t));
-			board->drop_cell_count[gravity] += 1;
+			board->gravity_cell_count[gravity] += 1;
 			board->gravity_cells[gravity][cell] = &board->cells[i];
 		}
 	}
