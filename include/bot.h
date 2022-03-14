@@ -3,6 +3,7 @@
 
 #include <stdint.h>
 #include <stddef.h>
+#include <stdbool.h>
 
 enum move_type {
 	move_type_rotate,
@@ -29,6 +30,7 @@ typedef struct board board_t;
 typedef struct state state_t;
 typedef struct moved_state moved_state_t;
 typedef struct move move_t;
+typedef struct movegen movegen_t;
 
 struct alloc_node {
 	void *ptr;
@@ -52,6 +54,8 @@ struct config {
 	int color_count;
 	int win_length;
 	int token_count;
+	float timeout;
+	int bot_id;
 	coord_t *walls;
 	size_t wall_count;
 };
@@ -83,14 +87,21 @@ struct moved_state {
 	state_t tmp;
 	state_t *state;
 	move_type_t type;
-	size_t cell_index;
+	cell_t *cell;
 };
 
 struct move {
 	move_type_t type;
 	int8_t token;
-	int pos;
+	size_t drop_index;
 	gravity_t gravity;
+};
+
+struct movegen {
+	state_t *state;
+	move_t move;
+	bool all_tokens;
+	int8_t tokens[2];
 };
 
 extern alloc_t alloc;
@@ -107,9 +118,13 @@ void state_new(state_t *state, board_t *board);
 void state_copy(state_t *state, state_t *other);
 void state_delete(state_t *state);
 
-void state_move_gravity(state_t *state, gravity_t gravity);
+void state_set_gravity(state_t *state, gravity_t gravity);
+cell_t *state_get_empty(state_t *state, cell_t *cell);
 int state_winner(state_t *state);
 void state_make_move(moved_state_t *moved_state, state_t *state, move_t *move);
 void state_unmake_move(moved_state_t *moved_state);
+
+void movegen_new(movegen_t *movegen, state_t *state, bool all_tokens);
+int movegen_next(movegen_t *movegen, move_t *move);
 
 #endif
