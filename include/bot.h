@@ -95,6 +95,7 @@ void state_delete(state_t *state);
 
 void state_move_drop(state_t *state, int pos, int8_t token);
 void state_move_gravity(state_t *state, int gravity);
+int state_winner(state_t *state);
 void state_make_move(moved_state_t *moved_state, state_t *state, move_t *move);
 void state_unmake_move(moved_state_t *moved_state);
 
