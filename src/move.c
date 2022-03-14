@@ -53,35 +53,19 @@ int state_winner(state_t *state)
 	return -1;
 }
 
-void state_make_move(moved_state_t *moved_state, state_t *state, move_t *move)
+void state_move(state_t *state, move_t *move)
 {
+	cell_t *cell;
 	switch (move->type) {
 	case move_type_rotate:
-		state_copy(&moved_state->tmp, state);
-		moved_state->state = &moved_state->tmp;
-		moved_state->state->bags[moved_state->state->turn] -= 2;
-		state_set_gravity(moved_state->state, move->gravity);
+		state->bags[state->turn] -= 2;
+		state_set_gravity(state, move->gravity);
 		break;
 	case move_type_drop:
-		moved_state->state = state;
-		moved_state->state->bags[moved_state->state->turn] -= 1;
-		moved_state->cell = moved_state->state->board->drop_cells[state->gravity][move->drop_index];
-		moved_state->state->tokens[moved_state->cell - moved_state->state->board->cells] = move->token;
+		state->bags[state->turn] -= 1;
+		cell = state->board->drop_cells[state->gravity][move->drop_index];
+		state->tokens[cell - state->board->cells] = move->token;
 		break;
 	}
-	moved_state->state->turn = !moved_state->state->turn;
-}
-
-void state_unmake_move(moved_state_t *moved_state)
-{
-	switch (moved_state->type) {
-	case move_type_rotate:
-		state_delete(&moved_state->tmp);
-		break;
-	case move_type_drop:
-		moved_state->state->tokens[moved_state->cell - moved_state->state->board->cells] = -1;
-		moved_state->state->turn = !moved_state->state->turn;
-		moved_state->state->bags[moved_state->state->turn] += 1;
-		break;
-	}
+	state->turn = !state->turn;
 }

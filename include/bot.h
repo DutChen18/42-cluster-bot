@@ -28,9 +28,7 @@ typedef struct coord coord_t;
 typedef struct cell cell_t;
 typedef struct board board_t;
 typedef struct state state_t;
-typedef struct moved_state moved_state_t;
 typedef struct move move_t;
-typedef struct movegen movegen_t;
 
 struct alloc_node {
 	void *ptr;
@@ -83,25 +81,11 @@ struct state {
 	gravity_t gravity;
 };
 
-struct moved_state {
-	state_t tmp;
-	state_t *state;
-	cell_t *cell;
-	move_type_t type;
-};
-
 struct move {
 	size_t drop_index;
 	int8_t token;
 	move_type_t type;
 	gravity_t gravity;
-};
-
-struct movegen {
-	state_t *state;
-	move_t move;
-	bool all_tokens;
-	int8_t tokens[2];
 };
 
 extern alloc_t alloc;
@@ -121,10 +105,8 @@ void state_delete(state_t *state);
 void state_set_gravity(state_t *state, gravity_t gravity);
 cell_t *state_get_empty(state_t *state, cell_t *cell);
 int state_winner(state_t *state);
-void state_make_move(moved_state_t *moved_state, state_t *state, move_t *move);
-void state_unmake_move(moved_state_t *moved_state);
+void state_move(state_t *state, move_t *move);
 
-void movegen_new(movegen_t *movegen, state_t *state, bool all_tokens);
-int movegen_next(movegen_t *movegen, move_t *move);
+move_t *move_gen(size_t *size, state_t *state, bool all_tokens, int8_t token_a, int8_t token_b);
 
 #endif
