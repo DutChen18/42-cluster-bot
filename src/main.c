@@ -59,6 +59,7 @@ static void check_consistency(state_t *state)
 		int q, r, s, value;
 		scanf(" cell %d %d %d %d", &q, &r, &s, &value);
 		cell_t *cell = board_get(state->board, q, r, s);
+		(void) cell;
 		assert(cell != NULL);
 		assert(state->tokens[cell - state->board->cells] == value);
 	}
@@ -75,6 +76,7 @@ int main(void)
 	int			wall_count;
 
 	alloc_new(&alloc);
+	random_new(&rng);
 	setbuf(stdout, NULL);
 	setbuf(stdin, NULL);
 	setbuf(stderr, NULL);

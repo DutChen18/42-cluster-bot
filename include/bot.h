@@ -94,6 +94,7 @@ struct move {
 };
 
 extern alloc_t alloc;
+extern random_t rng;
 
 cell_t *board_get(board_t *board, int q, int r, int s);
 void random_new(random_t *rng);
