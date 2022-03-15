@@ -1,4 +1,5 @@
 #include "bot.h"
+#include <stdio.h>
 
 void state_set_gravity(state_t *state, gravity_t gravity)
 {

@@ -1,6 +1,5 @@
 #include "bot.h"
 #include <stdlib.h>
-#include <stdio.h>
 #include <assert.h>
 
 static cell_t *board_get(board_t *board, int q, int r, int s)
@@ -33,7 +32,7 @@ static void get_drop_cells(board_t *board, config_t *config, int gravity)
 		coord_t cur_coords = coord_from_pos(pos, gravity, config->grid_size);
 		cell_t *cell = board_get(board, cur_coords.q, cur_coords.r, cur_coords.s);
 		if (cell != NULL) {
-			board->drop_cells[gravity] = realloc(board->drop_cells[gravity], (board->drop_cell_count[gravity] + 1) * sizeof(cell_t));
+			board->drop_cells[gravity] = realloc(board->drop_cells[gravity], (board->drop_cell_count[gravity] + 1) * sizeof(cell_t*));
 			board->drop_cells[gravity][board->drop_cell_count[gravity]] = cell;
 			board->drop_cell_count[gravity] += 1;
 		}
@@ -43,11 +42,11 @@ static void get_drop_cells(board_t *board, config_t *config, int gravity)
 static void get_gravity_cells(board_t *board, config_t *config, int gravity)
 {
 	(void) config;
-	board->drop_cell_count[gravity] = 0;
+	board->gravity_cell_count[gravity] = 0;
 	for (size_t i = 0; i < board->cell_count; i += 1) {
 		if (board->cells[i].neighbors[gravity] == NULL) {
-			board->gravity_cells[gravity] = realloc(board->gravity_cells[gravity], (board->drop_cell_count[gravity] + 1) * sizeof(cell_t));
-			board->gravity_cells[gravity][board->drop_cell_count[gravity]] = &board->cells[i];
+			board->gravity_cells[gravity] = realloc(board->gravity_cells[gravity], (board->gravity_cell_count[gravity] + 1) * sizeof(cell_t));
+			board->gravity_cells[gravity][board->gravity_cell_count[gravity]] = &board->cells[i];
 			board->gravity_cell_count[gravity] += 1;
 		}
 	}
