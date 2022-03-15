@@ -36,17 +36,17 @@ static float search_eval(state_t *state, int samples, int turn, int max_depth)
 	return score / samples;
 }
 
-int	heuristics_cluster(state_t *state)
+float heuristics_cluster(state_t *state)
 {
-	return search_eval(state, 20, state->turn, 10) * 10000;
+	return search_eval(state, 20, state->turn, 10);
 }
 
-int	minmax_cluster(state_t *state, int depth, int alpha, int beta)
+float minmax_cluster(state_t *state, int depth, float alpha, float beta)
 {
 	size_t	size;
-	int		eval;
+	float	eval;
 	state_t child;
-	int		score;
+	float	score;
 	move_t	*moves = move_gen(&size, state, (tokens_t) { .a = -1, .b = -1 });
 
 	if (depth == 0 || state_winner(state) >= 0)
@@ -54,7 +54,7 @@ int	minmax_cluster(state_t *state, int depth, int alpha, int beta)
 		return (heuristics_cluster(state));
 	}
 	
-	score = INT32_MIN;
+	score = -1000000.0f;
 	for (size_t i = 0; i < size; i++)
 	{
 		state_copy(&child, state);
@@ -73,18 +73,18 @@ int	minmax_cluster(state_t *state, int depth, int alpha, int beta)
 void	outer_move_minmax(state_t *state, tokens_t token, int depth, move_t *best_move)
 {
 	size_t	size;
-	int		eval;
+	float	eval;
 	state_t child;
-	int		score;
+	float	score;
 	move_t	*moves = move_gen(&size, state, token);
 
-	score = INT32_MIN;
+	score = -1000000.0f;
 	*best_move = moves[0];
 	for (size_t i = 0; i < size; i++)
 	{
 		state_copy(&child, state);
 		state_move(&child, &moves[i]);
-		eval = -minmax_cluster(&child, depth - 1, score, INT32_MAX);
+		eval = -minmax_cluster(&child, depth - 1, -1000000.0f, -score);
 		if (eval > score)
 		{
 			score = eval;
