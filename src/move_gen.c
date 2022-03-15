@@ -8,7 +8,7 @@ move_t *move_gen(size_t *size, state_t *state, tokens_t tokens)
 		for (int j = 0; j < state->board->config->color_count; j++) {
 			int k = j + state->turn * state->board->config->color_count;
 			if ((tokens.a == -1 && tokens.b == -1) || k == tokens.a || k == tokens.b) {
-				if (state->tokens[state->board->drop_cells[state->gravity][i] - state->board->cells] == -1) {
+				if (state_token(state, state->board->drop_cells[state->gravity][i]) == -1) {
 					result[index].type = move_type_drop;
 					result[index].drop_index = i;
 					result[index].token = k;

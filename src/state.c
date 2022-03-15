@@ -34,3 +34,8 @@ void state_delete(state_t *state)
 {
 	alloc_free(&alloc, state->tokens);
 }
+
+int8_t state_token(state_t *state, cell_t *cell)
+{
+	return state->tokens[cell - state->board->cells];
+}

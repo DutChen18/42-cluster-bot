@@ -16,6 +16,7 @@ int coord_to_pos(coord_t coord, gravity_t gravity)
 	case north_west:
 		return coord.r;
 	}
+	return 0;
 }
 
 coord_t coord_from_pos(int pos, gravity_t gravity, int size)
@@ -37,4 +38,10 @@ coord_t coord_from_pos(int pos, gravity_t gravity, int size)
 	case north_west:
 		return (coord_t) { .q = -s, .r = -q, .s = -r };
 	}
+	return (coord_t) { .q = q, .r = r, .s = s };
+}
+
+bool coord_eq(coord_t a, coord_t b)
+{
+	return a.q == b.q && a.r == b.r && a.s == b.s;
 }

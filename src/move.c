@@ -4,7 +4,7 @@ static int state_length(state_t *state, cell_t *cell, gravity_t gravity)
 {
 	int length = 0;
 	cell_t *next = cell;
-	while (next->neighbors[gravity] != NULL && state->tokens[next->neighbors[gravity] - state->board->cells] == state->tokens[cell - state->board->cells]) {
+	while (next->neighbors[gravity] != NULL && state_token(state, next->neighbors[gravity]) == state_token(state, cell)) {
 		next = next->neighbors[gravity];
 		length++;
 	}
@@ -13,11 +13,12 @@ static int state_length(state_t *state, cell_t *cell, gravity_t gravity)
 
 static void state_update(state_t *state, int length, int8_t token)
 {
+	int player = token / state->board->config->color_count;
 	if (length > state->best_length) {
 		state->best_length = length;
-		state->best_player = token / state->board->config->color_count;
+		state->best_player = player;
 		state->best_count = 1;
-	} else if (length == state->best_length && token / state->board->config->color_count != state->best_player) {
+	} else if (length == state->best_length && player != state->best_player) {
 		state->best_count += 1;
 	}
 }
@@ -25,11 +26,11 @@ static void state_update(state_t *state, int length, int8_t token)
 static void state_update_at(state_t *state, cell_t *cell)
 {
 	for (int i = 0; i < 3; i++) {
-		if (state->tokens[cell - state->board->cells] != -1) {
+		if (state_token(state, cell) != -1) {
 			int length = 1;
 			length += state_length(state, cell, i);
 			length += state_length(state, cell, i + 3);
-			state_update(state, length, state->tokens[cell - state->board->cells]);
+			state_update(state, length, state_token(state, cell));
 		}
 	}
 }
@@ -56,9 +57,9 @@ void state_set_gravity(state_t *state, gravity_t gravity)
 	for (size_t i = 0; i < state->board->gravity_cell_count[gravity]; i++) {
 		cell_t *top = state->board->gravity_cells[gravity][i], *bot = top;
 		while (top != NULL) {
-			if (state->tokens[top - state->board->cells] != -1) {
-				int8_t tmp = state->tokens[bot - state->board->cells];
-				state->tokens[bot - state->board->cells] = state->tokens[top - state->board->cells];
+			if (state_token(state, top) != -1) {
+				int8_t tmp = state_token(state, bot);
+				state->tokens[bot - state->board->cells] = state_token(state, top);
 				state->tokens[top - state->board->cells] = tmp;
 				bot = bot->neighbors[(gravity + 3) % 6];
 			}
@@ -70,7 +71,7 @@ void state_set_gravity(state_t *state, gravity_t gravity)
 
 cell_t *state_get_empty(state_t *state, cell_t *cell)
 {
-	while (cell->neighbors[state->gravity] != NULL && state->tokens[cell->neighbors[state->gravity] - state->board->cells] == -1)
+	while (cell->neighbors[state->gravity] != NULL && state_token(state, cell->neighbors[state->gravity]) == -1)
 		cell = cell->neighbors[state->gravity];
 	return cell;
 }

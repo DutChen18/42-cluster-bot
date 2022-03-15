@@ -28,16 +28,16 @@ static float search_eval(state_t *state, int samples, int turn, int max_depth)
 		search_random(&one_turn, &winner, &depth, max_depth);
 		state_delete(&one_turn);
 		if (winner == turn)
-			score += 100.0 / depth / depth;
+			score += 1.0 / depth;
 		else if (winner == !turn)
-			score -= 100.0 / depth / depth;
+			score -= 1.0 / depth;
 	}
 	return score / samples;
 }
 
 float heuristics_cluster(state_t *state)
 {
-	return search_eval(state, 20, state->turn, 10);
+	return search_eval(state, 50, state->turn, 10);
 }
 
 float minmax_cluster(state_t *state, int depth, float alpha, float beta)

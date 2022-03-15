@@ -118,7 +118,7 @@ extern alloc_t alloc;
 extern random_t rng;
 extern game_time_t g_time;
 
-cell_t *board_get(board_t *board, int q, int r, int s);
+cell_t *board_get(board_t *board, coord_t coord);
 void random_new(random_t *rng);
 void random_with_seed(random_t *rng, uint32_t seed);
 int32_t random_next(random_t *rng);
@@ -129,6 +129,7 @@ void alloc_free(alloc_t *alloc, void *ptr);
 
 int coord_to_pos(coord_t coord, gravity_t gravity);
 coord_t coord_from_pos(int pos, gravity_t gravity, int size);
+bool coord_eq(coord_t a, coord_t b);
 
 void board_new(board_t *board, config_t *config); // delete?
 void state_new(state_t *state, board_t *board);
@@ -139,6 +140,7 @@ void state_set_gravity(state_t *state, gravity_t gravity);
 cell_t *state_get_empty(state_t *state, cell_t *cell);
 int state_winner(state_t *state);
 void state_move(state_t *state, move_t *move);
+int8_t state_token(state_t *state, cell_t *cell);
 
 move_t *move_gen(size_t *size, state_t *state, tokens_t tokens);
 void search(state_t *state, move_t *move, tokens_t token);

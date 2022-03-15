@@ -8,7 +8,7 @@ static size_t drop_index_from_coord(coord_t coord, state_t *state)
 {
 	for (size_t i = 0; i < state->board->drop_cell_count[state->gravity]; i++) {
 		cell_t *cell = state->board->drop_cells[state->gravity][i];
-		if (cell->coord.q == coord.q && cell->coord.r == coord.r && cell->coord.s == coord.s)
+		if (coord_eq(cell->coord, coord))
 			return i;
 	}
 	assert(false);
@@ -58,10 +58,10 @@ static void check_consistency(state_t *state)
 	for (int i = 0; i < cell_count; i++) {
 		int q, r, s, value;
 		scanf(" cell %d %d %d %d", &q, &r, &s, &value);
-		cell_t *cell = board_get(state->board, q, r, s);
+		cell_t *cell = board_get(state->board, (coord_t) { .q = q, .r = r, .s = s });
 		(void) cell;
 		assert(cell != NULL);
-		assert(state->tokens[cell - state->board->cells] == value);
+		assert(state_token(state, cell) == value);
 	}
 }
 
