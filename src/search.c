@@ -4,13 +4,13 @@
 static void search_random(state_t *state, int *winner, int *depth, int max_depth)
 {
 	*depth += 1;
+	*winner = state_winner(state);
+	if (*winner != -1)
+		return;
 	if (max_depth == 0) {
 		*winner = -1;
 		return;
 	}
-	*winner = state_winner(state);
-	if (*winner != -1)
-		return;
 	size_t move_count;
 	move_t *moves = move_gen(&move_count, state, (tokens_t) { .a = -1, .b = -1 });
 	state_move(state, &moves[random_next(&rng) % move_count]);
