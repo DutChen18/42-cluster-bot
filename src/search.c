@@ -1,4 +1,5 @@
 #include "bot.h"
+#include <stdlib.h>
 
 int	heuristics_cluster(state_t *state)
 {
@@ -7,22 +8,22 @@ int	heuristics_cluster(state_t *state)
 	score = state_winner(state);
 	if (score != -1)
 	{
-		if (score == 0)
-			return (INT32_MIN);
-		else
+		if (score == state->board->config->bot_id)
 			return (INT32_MAX);
+		else
+			return (INT32_MIN);
 	}
 	//toevoegingen voor heuristics
 	return (score);
 }
 
-int	minmax_cluster(state_t *state, tokens_t token, int depth, bool maximizing)
+int	minmax_cluster(state_t *state, int depth, bool maximizing)
 {
-	size_t			size;
-	int				eval;
-	state_t 		child;
-	int				score;
-	move_t			*moves = move_gen(&size, state, (tokens_t) { .a = -1, .b = -1});
+	size_t	size;
+	int		eval;
+	state_t child;
+	int		score;
+	move_t	*moves = move_gen(&size, state, (tokens_t) { .a = -1, .b = -1 });
 
 	if (depth == 0 || state_winner(state) >= 0)
 	{
@@ -36,8 +37,8 @@ int	minmax_cluster(state_t *state, tokens_t token, int depth, bool maximizing)
 		{
 			state_copy(&child, state);
 			state_move(&child, &moves[i]);
-			eval = min_max_cluster(&child, (tokens_t) { .a = -1, .b = -1}, depth - 1, false);
-			score = max(eval, score);
+			eval = minmax_cluster(&child, depth - 1, false);
+			score = eval > score ? eval : score;
 			state_delete(&child);
 		}
 		alloc_free(&alloc, moves);
@@ -50,8 +51,8 @@ int	minmax_cluster(state_t *state, tokens_t token, int depth, bool maximizing)
 		{
 			state_copy(&child, state);
 			state_move(&child, &moves[i]);
-			eval = min_max_cluster(&child, (tokens_t) { .a = -1, .b = -1}, depth - 1, false);
-			score = min(eval, score);
+			eval = minmax_cluster(&child, depth - 1, true);
+			score = eval < score ? eval : score;
 			state_delete(&child);
 		}
 		alloc_free(&alloc, moves);
@@ -61,33 +62,27 @@ int	minmax_cluster(state_t *state, tokens_t token, int depth, bool maximizing)
 
 void	outer_move_minmax(state_t *state, tokens_t token, int depth, move_t *best_move)
 {
-		size_t		size;
-	int				eval;
-	state_t 		child;
-	int				score;
-	move_t			best_move;
-	bool			best_move_set;
-	move_t			*moves = move_gen(&size, state, (tokens_t) { .a = -1, .b = -1});
+	size_t	size;
+	int		eval;
+	state_t child;
+	int		score;
+	move_t	*moves = move_gen(&size, state, token);
 
 	score = INT32_MIN;
-	best_move_set = false;
+	*best_move = moves[0];
 	for (size_t i = 0; i < size; i++)
 	{
 		state_copy(&child, state);
 		state_move(&child, &moves[i]);
-		eval = min_max_cluster(&child, (tokens_t) { .a = -1, .b = -1}, depth - 1, false);
-		if (score > eval)
+		eval = minmax_cluster(&child, depth - 1, false);
+		if (eval > score)
 		{
-			eval = score;
+			score = eval;
 			*best_move = moves[i];
-			best_move_set = true;
 		}
 		state_delete(&child);
 	}
-	if (best_move_set == false)
-		*best_move = moves[0];
 	alloc_free(&alloc, moves);
-	return (best_move);
 }
 
 void search(state_t *state, move_t *move, tokens_t token)
@@ -96,5 +91,5 @@ void search(state_t *state, move_t *move, tokens_t token)
 	// move_t *moves = move_gen(&size, state, token);
 	// random_t rng;
 	// random_new(&rng);
-	outer_move_minmax(state, token, 4, &move);
+	outer_move_minmax(state, token, 4, move);
 }

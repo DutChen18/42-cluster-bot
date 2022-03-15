@@ -31,17 +31,14 @@ typedef struct cell cell_t;
 typedef struct board board_t;
 typedef struct state state_t;
 typedef struct move move_t;
-<<<<<<< HEAD
 typedef struct tokens tokens_t;
 typedef struct minmax_data minmax_data_t;
+typedef struct game_time game_time_t;
 
 struct tokens {
 	int8_t	a;
 	int8_t	b;
 };
-=======
-typedef struct game_time game_time_t;
->>>>>>> 660b67d24ef6d30d87e1afaf5857d25963f5def4
 
 struct random {
 	uint32_t state;
