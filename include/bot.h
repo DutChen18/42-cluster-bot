@@ -30,6 +30,13 @@ typedef struct cell cell_t;
 typedef struct board board_t;
 typedef struct state state_t;
 typedef struct move move_t;
+typedef struct tokens tokens_t;
+typedef struct minmax_data minmax_data_t;
+
+struct tokens {
+	int8_t	a;
+	int8_t	b;
+};
 
 struct random {
 	uint32_t state;
@@ -93,6 +100,11 @@ struct move {
 	gravity_t gravity;
 };
 
+struct minmax_data {
+	move_t	move;
+	int		score;
+};
+
 extern alloc_t alloc;
 
 void random_new(random_t *rng);
@@ -116,7 +128,7 @@ cell_t *state_get_empty(state_t *state, cell_t *cell);
 int state_winner(state_t *state);
 void state_move(state_t *state, move_t *move);
 
-move_t *move_gen(size_t *size, state_t *state, int8_t token_a, int8_t token_b);
-void search(state_t *state, move_t *move, int8_t token_a, int8_t token_b);
+move_t *move_gen(size_t *size, state_t *state, tokens_t tokens);
+void search(state_t *state, move_t *move, tokens_t token);
 
 #endif
