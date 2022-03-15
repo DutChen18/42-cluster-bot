@@ -21,6 +21,7 @@ enum gravity {
 
 typedef enum move_type move_type_t;
 typedef enum gravity gravity_t;
+typedef struct random random_t;
 typedef struct alloc_node alloc_node_t;
 typedef struct alloc alloc_t;
 typedef struct config config_t;
@@ -29,6 +30,10 @@ typedef struct cell cell_t;
 typedef struct board board_t;
 typedef struct state state_t;
 typedef struct move move_t;
+
+struct random {
+	uint32_t state;
+};
 
 struct alloc_node {
 	void *ptr;
@@ -90,6 +95,10 @@ struct move {
 
 extern alloc_t alloc;
 
+void random_new(random_t *rng);
+void random_with_seed(random_t *rng, uint32_t seed);
+int32_t random_next(random_t *rng);
+
 void alloc_new(alloc_t *alloc); // delete?
 void *alloc_alloc(alloc_t *alloc, size_t size);
 void alloc_free(alloc_t *alloc, void *ptr);
@@ -107,6 +116,7 @@ cell_t *state_get_empty(state_t *state, cell_t *cell);
 int state_winner(state_t *state);
 void state_move(state_t *state, move_t *move);
 
-move_t *move_gen(size_t *size, state_t *state, bool all_tokens, int8_t token_a, int8_t token_b);
+move_t *move_gen(size_t *size, state_t *state, int8_t token_a, int8_t token_b);
+void search(state_t *state, move_t *move, int8_t token_a, int8_t token_b);
 
 #endif
