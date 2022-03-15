@@ -4,6 +4,7 @@
 #include <stdint.h>
 #include <stddef.h>
 #include <stdbool.h>
+#include <sys/time.h>
 
 enum move_type {
 	move_type_rotate,
@@ -30,9 +31,14 @@ typedef struct cell cell_t;
 typedef struct board board_t;
 typedef struct state state_t;
 typedef struct move move_t;
+typedef struct game_time game_time_t;
 
 struct random {
 	uint32_t state;
+};
+
+struct game_time {
+	struct timeval	start;
 };
 
 struct alloc_node {
@@ -93,7 +99,8 @@ struct move {
 	gravity_t gravity;
 };
 
-extern alloc_t alloc;
+extern alloc_t 		alloc;
+extern game_time_t	g_time;
 
 cell_t *board_get(board_t *board, int q, int r, int s);
 void random_new(random_t *rng);
@@ -119,5 +126,8 @@ void state_move(state_t *state, move_t *move);
 
 move_t *move_gen(size_t *size, state_t *state, int8_t token_a, int8_t token_b);
 void search(state_t *state, move_t *move, int8_t token_a, int8_t token_b);
+
+float	get_time();
+void	time_init();
 
 #endif
