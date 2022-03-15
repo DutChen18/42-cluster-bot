@@ -10,6 +10,9 @@ void state_new(state_t *state, board_t *board)
 	state->bags[1] = board->config->token_count * board->config->color_count;
 	state->turn = 0;
 	state->gravity = south;
+	state->best_player = -1;
+	state->best_length = 0;
+	state->best_count = 0;
 }
 
 void state_copy(state_t *state, state_t *other)
@@ -22,6 +25,9 @@ void state_copy(state_t *state, state_t *other)
 	state->bags[1] = other->bags[1];
 	state->turn = other->turn;
 	state->gravity = other->gravity;
+	state->best_player = other->best_player;
+	state->best_length = other->best_length;
+	state->best_count = other->best_count;
 }
 
 void state_delete(state_t *state)

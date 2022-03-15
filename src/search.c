@@ -1,6 +1,5 @@
 #include "bot.h"
 #include <stdlib.h>
-#include <stdio.h>
 
 static void search_random(state_t *state, int *winner, int *depth, int max_depth)
 {

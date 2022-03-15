@@ -97,6 +97,9 @@ struct state {
 	int bags[2];
 	int turn;
 	gravity_t gravity;
+	int best_player;
+	int best_length;
+	int best_count;
 };
 
 struct move {

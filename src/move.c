@@ -1,5 +1,55 @@
 #include "bot.h"
 
+static int state_length(state_t *state, cell_t *cell, gravity_t gravity)
+{
+	int length = 0;
+	cell_t *next = cell;
+	while (next->neighbors[gravity] != NULL && state->tokens[next->neighbors[gravity] - state->board->cells] == state->tokens[cell - state->board->cells]) {
+		next = next->neighbors[gravity];
+		length++;
+	}
+	return length;
+}
+
+static void state_update(state_t *state, int length, int8_t token)
+{
+	if (length > state->best_length) {
+		state->best_length = length;
+		state->best_player = token / state->board->config->color_count;
+		state->best_count = 1;
+	} else if (length == state->best_length && token / state->board->config->color_count != state->best_player) {
+		state->best_count += 1;
+	}
+}
+
+static void state_update_at(state_t *state, cell_t *cell)
+{
+	for (int i = 0; i < 3; i++) {
+		if (state->tokens[cell - state->board->cells] != -1) {
+			int length = 1;
+			length += state_length(state, cell, i);
+			length += state_length(state, cell, i + 3);
+			state_update(state, length, state->tokens[cell - state->board->cells]);
+		}
+	}
+}
+
+static void state_update_all(state_t *state)
+{
+	state->best_player = -1;
+	state->best_length = 0;
+	state->best_count = 0;
+	for (int i = 0; i < 3; i++) {
+		for (size_t j = 0; j < state->board->cell_count; j++) {
+			if (state->tokens[j] != -1) {
+				int length = 1;
+				length += state_length(state, &state->board->cells[j], i);
+				state_update(state, length, state->tokens[j]);
+			}
+		}
+	}
+}
+
 void state_set_gravity(state_t *state, gravity_t gravity)
 {
 	state->gravity = gravity;
@@ -15,6 +65,7 @@ void state_set_gravity(state_t *state, gravity_t gravity)
 			top = top->neighbors[(gravity + 3) % 6];
 		}
 	}
+	state_update_all(state);
 }
 
 cell_t *state_get_empty(state_t *state, cell_t *cell)
@@ -26,35 +77,12 @@ cell_t *state_get_empty(state_t *state, cell_t *cell)
 
 int state_winner(state_t *state)
 {
-	int best_player = -1;
-	int best_length = 0;
-	int best_count = 0;
+	if (state->best_player != -1 && state->best_length >= state->board->config->win_length && state->best_count == 1)
+		return state->best_player;
 	if (state->bags[0] == 0)
 		return 1;
 	if (state->bags[1] == 0)
 		return 0;
-	for (int i = 0; i < 3; i++) {
-		for (size_t j = 0; j < state->board->cell_count; j++) {
-			if (state->tokens[j] != -1) {
-				int length = 1;
-				cell_t *cell = &state->board->cells[j];
-				while (cell->neighbors[i] != NULL && state->tokens[cell->neighbors[i] - state->board->cells] == state->tokens[j]) {
-					cell = cell->neighbors[i];
-					length += 1;
-				}
-				if (length > best_length) {
-					best_player = state->tokens[j] / state->board->config->color_count;
-					best_length = length;
-					best_count = 1;
-				} else if (length == best_length && state->tokens[j] / state->board->config->color_count != best_player) {
-					best_count += 1;
-				}
-			}
-		}
-	}
-	if (best_length >= state->board->config->win_length && best_count == 1) {
-		return best_player;
-	}
 	return -1;
 }
 
@@ -71,6 +99,7 @@ void state_move(state_t *state, move_t *move)
 		cell = state->board->drop_cells[state->gravity][move->drop_index];
 		cell = state_get_empty(state, cell);
 		state->tokens[cell - state->board->cells] = move->token;
+		state_update_at(state, cell);
 		break;
 	}
 	state->turn = !state->turn;
