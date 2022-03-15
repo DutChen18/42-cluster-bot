@@ -2,9 +2,13 @@
 #include <stdlib.h>
 #include <stdio.h>
 
-static void search_random(state_t *state, int *winner, int *depth)
+static void search_random(state_t *state, int *winner, int *depth, int max_depth)
 {
 	*depth += 1;
+	if (max_depth == 0) {
+		*winner = -1;
+		return;
+	}
 	*winner = state_winner(state);
 	if (*winner != -1)
 		return;
@@ -12,17 +16,17 @@ static void search_random(state_t *state, int *winner, int *depth)
 	move_t *moves = move_gen(&move_count, state, (tokens_t) { .a = -1, .b = -1 });
 	state_move(state, &moves[random_next(&rng) % move_count]);
 	alloc_free(&alloc, moves);
-	search_random(state, winner, depth);
+	search_random(state, winner, depth, max_depth - 1);
 }
 
-static float search_eval(state_t *state, int samples, int turn)
+static float search_eval(state_t *state, int samples, int turn, int max_depth)
 {
 	float score = 0;
 	for (int i = 0; i < samples; i++) {
 		state_t one_turn;
 		state_copy(&one_turn, state);
 		int winner, depth = 0;
-		search_random(&one_turn, &winner, &depth);
+		search_random(&one_turn, &winner, &depth, max_depth);
 		state_delete(&one_turn);
 		if (winner == turn)
 			score += 100.0 / depth / depth;
@@ -34,7 +38,7 @@ static float search_eval(state_t *state, int samples, int turn)
 
 int	heuristics_cluster(state_t *state)
 {
-	return search_eval(state, 20, state->turn) * 10000;
+	return search_eval(state, 20, state->turn, 10) * 10000;
 }
 
 int	minmax_cluster(state_t *state, int depth, int alpha, int beta)
