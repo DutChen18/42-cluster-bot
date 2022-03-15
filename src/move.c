@@ -1,5 +1,4 @@
 #include "bot.h"
-#include <stdio.h>
 
 void state_set_gravity(state_t *state, gravity_t gravity)
 {
@@ -11,16 +10,16 @@ void state_set_gravity(state_t *state, gravity_t gravity)
 				int8_t tmp = state->tokens[bot - state->board->cells];
 				state->tokens[bot - state->board->cells] = state->tokens[top - state->board->cells];
 				state->tokens[top - state->board->cells] = tmp;
-				bot = bot->neighbors[!gravity];
+				bot = bot->neighbors[(gravity + 3) % 6];
 			}
-			top = top->neighbors[!gravity];
+			top = top->neighbors[(gravity + 3) % 6];
 		}
 	}
 }
 
 cell_t *state_get_empty(state_t *state, cell_t *cell)
 {
-	while (cell->neighbors[state->gravity] != NULL && state->tokens[cell - state->board->cells] == -1)
+	while (cell->neighbors[state->gravity] != NULL && state->tokens[cell->neighbors[state->gravity] - state->board->cells] == -1)
 		cell = cell->neighbors[state->gravity];
 	return cell;
 }
@@ -49,8 +48,9 @@ int state_winner(state_t *state)
 			}
 		}
 	}
-	if (best_length >= state->board->config->win_length && best_count == 1)
+	if (best_length >= state->board->config->win_length && best_count == 1) {
 		return best_player;
+	}
 	return -1;
 }
 
@@ -65,6 +65,7 @@ void state_move(state_t *state, move_t *move)
 	case move_type_drop:
 		state->bags[state->turn] -= 1;
 		cell = state->board->drop_cells[state->gravity][move->drop_index];
+		cell = state_get_empty(state, cell);
 		state->tokens[cell - state->board->cells] = move->token;
 		break;
 	}

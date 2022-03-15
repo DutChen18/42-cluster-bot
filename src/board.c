@@ -2,16 +2,6 @@
 #include <stdlib.h>
 #include <assert.h>
 
-static cell_t *board_get(board_t *board, int q, int r, int s)
-{
-	for (size_t i = 0; i < board->cell_count; i += 1) {
-		cell_t *cell = &board->cells[i];
-		if (cell->coord.q == q && cell->coord.r == r && cell->coord.s == s)
-			return cell;
-	}
-	return NULL;
-}
-
 static void board_init_neighbors(board_t *board)
 {
 	for (size_t i = 0; i < board->cell_count; i += 1) {
@@ -50,6 +40,16 @@ static void get_gravity_cells(board_t *board, config_t *config, int gravity)
 			board->gravity_cell_count[gravity] += 1;
 		}
 	}
+}
+
+cell_t *board_get(board_t *board, int q, int r, int s)
+{
+	for (size_t i = 0; i < board->cell_count; i += 1) {
+		cell_t *cell = &board->cells[i];
+		if (cell->coord.q == q && cell->coord.r == r && cell->coord.s == s)
+			return cell;
+	}
+	return NULL;
 }
 
 void board_new(board_t *board, config_t *config)

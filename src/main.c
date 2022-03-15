@@ -46,6 +46,24 @@ static void write_action(move_t *move, state_t *state)
 	}
 }
 
+static void check_consistency(state_t *state)
+{
+	int gravity;
+	printf("fetch gravity\n");
+	scanf(" gravity %d", &gravity);
+	assert((int) state->gravity == gravity);
+	printf("fetch cells\n");
+	int cell_count;
+	scanf(" cell_count %d", &cell_count);
+	for (int i = 0; i < cell_count; i++) {
+		int q, r, s, value;
+		scanf(" cell %d %d %d %d", &q, &r, &s, &value);
+		cell_t *cell = board_get(state->board, q, r, s);
+		assert(cell != NULL);
+		assert(state->tokens[cell - state->board->cells] == value);
+	}
+}
+
 int main(void)
 {
 	config_t	config;
@@ -82,6 +100,7 @@ int main(void)
 	
 	while(1) {
 		scanf(" chips %d %d", &token_a, &token_b);
+		check_consistency(&state);
 		search(&state, &move, token_a, token_b);
 		write_action(&move, &state);
 		state_move(&state, &move);
