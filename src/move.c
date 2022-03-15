@@ -29,6 +29,10 @@ int state_winner(state_t *state)
 	int best_player = -1;
 	int best_length = 0;
 	int best_count = 0;
+	if (state->bags[0] == 0)
+		return 1;
+	if (state->bags[1] == 0)
+		return 0;
 	for (int i = 0; i < 3; i++) {
 		for (size_t j = 0; j < state->board->cell_count; j++) {
 			if (state->tokens[j] != -1) {

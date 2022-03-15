@@ -72,6 +72,7 @@ int main(void)
 	state_t		state;
 	int			token_a;
 	int			token_b;
+	int			wall_count;
 
 	alloc_new(&alloc);
 	setbuf(stdout, NULL);
@@ -85,10 +86,16 @@ int main(void)
 			&config.win_length,
 			&config.timeout,
 			&config.bot_id);
-	// TODO: we could fetch walls here
 	config.color_count /= 2;
-	config.walls = NULL;
-	config.wall_count = 0;
+	printf("fetch walls\n");
+	scanf(" wall_count %d", &wall_count);
+	config.wall_count = wall_count;
+	config.walls = malloc(sizeof(*config.walls) * config.wall_count);
+	for (size_t i = 0; i < config.wall_count; i++) {
+		int q, r, s;
+		scanf(" wall %d %d %d", &q, &r, &s);
+		config.walls[i] = (coord_t) { .q = q, .r = r, .s = s };
+	}
 	board_new(&board, &config);
 	state_new(&state, &board);
 
