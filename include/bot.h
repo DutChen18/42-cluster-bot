@@ -4,6 +4,7 @@
 #include <stdint.h>
 #include <stddef.h>
 #include <stdbool.h>
+#include <sys/time.h>
 
 enum move_type {
 	move_type_rotate,
@@ -30,6 +31,7 @@ typedef struct cell cell_t;
 typedef struct board board_t;
 typedef struct state state_t;
 typedef struct move move_t;
+<<<<<<< HEAD
 typedef struct tokens tokens_t;
 typedef struct minmax_data minmax_data_t;
 
@@ -37,9 +39,16 @@ struct tokens {
 	int8_t	a;
 	int8_t	b;
 };
+=======
+typedef struct game_time game_time_t;
+>>>>>>> 660b67d24ef6d30d87e1afaf5857d25963f5def4
 
 struct random {
 	uint32_t state;
+};
+
+struct game_time {
+	struct timeval	start;
 };
 
 struct alloc_node {
@@ -106,7 +115,10 @@ struct minmax_data {
 };
 
 extern alloc_t alloc;
+extern random_t rng;
+extern game_time_t g_time;
 
+cell_t *board_get(board_t *board, int q, int r, int s);
 void random_new(random_t *rng);
 void random_with_seed(random_t *rng, uint32_t seed);
 int32_t random_next(random_t *rng);
@@ -130,5 +142,8 @@ void state_move(state_t *state, move_t *move);
 
 move_t *move_gen(size_t *size, state_t *state, tokens_t tokens);
 void search(state_t *state, move_t *move, tokens_t token);
+
+float	get_time();
+void	time_init();
 
 #endif

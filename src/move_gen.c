@@ -4,13 +4,6 @@ move_t *move_gen(size_t *size, state_t *state, tokens_t tokens)
 {
 	move_t *result = alloc_alloc(&alloc, sizeof(*result) * (6 + state->board->drop_cell_count[state->gravity] * state->board->config->color_count));
 	size_t index = 0;
-	if (state->bags[state->turn] >= 2) {
-		for (int i = 0; i < 6; i++) {
-			result[index].type = move_type_rotate;
-			result[index].gravity = i;
-			index += 1;
-		}
-	}
 	for (size_t i = 0; i < state->board->drop_cell_count[state->gravity]; i++) {
 		for (int j = 0; j < state->board->config->color_count; j++) {
 			int k = j + state->turn * state->board->config->color_count;
@@ -22,6 +15,13 @@ move_t *move_gen(size_t *size, state_t *state, tokens_t tokens)
 					index += 1;
 				}
 			}
+		}
+	}
+	if (state->bags[state->turn] >= 2) {
+		for (int i = 0; i < 6; i++) {
+			result[index].type = move_type_rotate;
+			result[index].gravity = i;
+			index += 1;
 		}
 	}
 	*size = index;

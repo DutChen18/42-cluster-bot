@@ -2,6 +2,8 @@
 #include <time.h>
 #include <unistd.h>
 
+random_t rng;
+
 static uint32_t mix(uint32_t a, uint32_t b, uint32_t c)
 {
 	a = (a - b - c) ^ (c >> 13);
