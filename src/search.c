@@ -58,7 +58,7 @@ static float minimax_cluster(const minimax_t *mm, search_t *s, state_t *state, i
 	size_t size;
 	state_t child;
 
-	if (get_time() >= state->board->config->timeout * 0.8) {
+	if (get_time() >= state->board->config->timeout * 0.8 - 0.01) {
 		s->timeout = true;
 		return 0;
 	}
