@@ -56,6 +56,20 @@ static float mcts_search_eval(state_t *state, int samples, int turn, int max_dep
 	return score / samples;
 }
 
+static float state_length_score(state_t *state, cell_t *cell, gravity_t gravity)
+{
+	float length = 0;
+	cell_t *next = cell;
+	while (next->neighbors[gravity] != NULL && state_token(state, next->neighbors[gravity]) == state_token(state, cell)) {
+		next = next->neighbors[gravity];
+		length += 5.0;
+	}
+	if (next->neighbors[gravity] != NULL && state_token(state, next->neighbors[gravity]) == -1) {
+		length += 2.0;
+	}
+	return length;
+}
+
 static float deterministic_search_eval(state_t *state, int depth)
 {
 	int winner = state_winner(state);
@@ -67,16 +81,11 @@ static float deterministic_search_eval(state_t *state, int depth)
 	for (size_t i = 0; i < state->board->cell_count; i++) {
 		if (state->tokens[i] == -1)
 			continue;
-		int adjacent = 0;
-		int empty = 0;
-		for (int j = 0; j < 6; j++) {
-			cell_t *cell = state->board->cells[i].neighbors[j];
-			if (cell != NULL && state->tokens[i] == state_token(state, cell))
-				adjacent += 1;
-			if (cell != NULL && state_token(state, cell) == -1)
-				empty += 1;
+		float tmp = 0;
+		for (int j = 0; j < 3; j++) {
+			tmp += state_length_score(state, &state->board->cells[i], j);
+			tmp += state_length_score(state, &state->board->cells[i], j + 3);
 		}
-		float tmp = 5 + adjacent * 10 + empty * 2;
 		if (state->tokens[i] / state->board->config->color_count == state->turn)
 			score += tmp;
 		else
