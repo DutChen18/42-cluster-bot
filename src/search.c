@@ -57,9 +57,9 @@ static float deterministic_search_eval(state_t *state, int depth)
 {
 	int winner = state_winner(state);
 	if (winner == state->turn)
-		return 999999.0f;
+		return 1000000.0f + depth;
 	else if (winner == !state->turn)
-		return -999999.0f;
+		return -1000000.0f - depth;
 	float score = 0;
 	for (size_t i = 0; i < state->board->cell_count; i++) {
 		if (state->tokens[i] == -1)
@@ -73,17 +73,13 @@ static float deterministic_search_eval(state_t *state, int depth)
 			if (cell != NULL && state_token(state, cell) == -1)
 				empty += 1;
 		}
-		float tmp = 10 + adjacent * 20 + empty * 4;
+		float tmp = 5 + adjacent * 10 + empty * 2;
 		if (state->tokens[i] / state->board->config->color_count == state->turn)
 			score += tmp;
 		else
 			score -= tmp;
 	}
-	if (score > 0)
-		score += depth / 100.0f;
-	else
-		score -= depth / 100.0f;
-	return score + (random_next(&rng) % 1000) / 100000.0f;
+	return score + (random_next(&rng) % 1000) / 1000.0f;
 }
 
 static float heuristics_cluster(const minimax_t *mm, state_t *state, int depth)
@@ -107,7 +103,7 @@ static float minimax_cluster(const minimax_t *mm, search_t *s, state_t *state, i
 		return (heuristics_cluster(mm, state, depth));
 	
 	move_t *moves = move_gen(&size, state, (tokens_t) { .a = -1, .b = -1 });
-	float score = -1000000.0f;
+	float score = -1000000000.0f;
 	for (size_t i = 0; i < size; i++) {
 		state_copy(&child, state);
 		state_move(&child, &moves[i]);
@@ -130,12 +126,12 @@ static void outer_move_minimax(const minimax_t *mm, search_t *s, state_t *state,
 	state_t child;
 	move_t	*moves = move_gen(&size, state, token);
 
-	float score = -1000000.0f;
+	float score = -1000000000.0f;
 	s->move = moves[0];
 	for (size_t i = 0; i < size; i++) {
 		state_copy(&child, state);
 		state_move(&child, &moves[i]);
-		float eval = -minimax_cluster(mm, s, &child, depth - 1, -1000000.0f, -score);
+		float eval = -minimax_cluster(mm, s, &child, depth - 1, -1000000000.0f, -score);
 		state_delete(&child);
 		if (s->timeout)
 			break;
