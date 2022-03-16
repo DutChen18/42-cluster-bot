@@ -2,11 +2,17 @@
 #include <stdlib.h>
 
 static const minimax_t params[] = {
-	{ .mm_depth = 2, .ev_samples = 0 },
-	{ .mm_depth = 2, .ev_samples = 50 },
-	{ .mm_depth = 2, .ev_samples = 200 },
+	//{ .mm_depth = 2, .ev_samples = 0 },
+	//{ .mm_depth = 2, .ev_samples = 50 },
+	//{ .mm_depth = 2, .ev_samples = 200 },
+	//{ .mm_depth = 4, .ev_samples = 20 },
+	{ .mm_depth = 2 },
+	{ .mm_depth = 4 },
+	{ .mm_depth = 6 },
+	{ .mm_depth = 8 },
 };
 
+/*
 static void search_random(state_t *state, int *winner, int *depth, int max_depth)
 {
 	*depth += 1;
@@ -47,10 +53,39 @@ static float search_eval(state_t *state, int samples, int turn, int max_depth)
 	}
 	return score / samples;
 }
+*/
+
+static float better_search_eval(state_t *state)
+{
+	int winner = state_winner(state);
+	if (winner == state->turn)
+		return 999999.0f;
+	else if (winner == !state->turn)
+		return -999999.0f;
+	float score = 0;
+	for (size_t i = 0; i < state->board->cell_count; i++) {
+		if (state->tokens[i] == -1)
+			continue;
+		int adjacent = 0;
+		for (int j = 0; j < 6; j++) {
+			cell_t *cell = state->board->cells[i].neighbors[j];
+			if (cell != NULL && state->tokens[i] == state_token(state, cell))
+				adjacent += 1;
+		}
+		float tmp = 1 + adjacent * (adjacent + 1);
+		if (state->tokens[i] / state->board->config->color_count == state->turn)
+			score += tmp;
+		else
+			score -= tmp;
+	}
+	return score;
+}
 
 static float heuristics_cluster(const minimax_t *mm, state_t *state)
 {
-	return search_eval(state, mm->ev_samples, state->turn, 10);
+	//return search_eval(state, mm->ev_samples, state->turn, 10);
+	(void) mm;
+	return better_search_eval(state);
 }
 
 static float minimax_cluster(const minimax_t *mm, search_t *s, state_t *state, int depth, float alpha, float beta)
