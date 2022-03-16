@@ -72,7 +72,7 @@ static float better_search_eval(state_t *state)
 			if (cell != NULL && state->tokens[i] == state_token(state, cell))
 				adjacent += 1;
 		}
-		float tmp = 1 + adjacent * (adjacent + 1);
+		float tmp = 1 + adjacent * 2;
 		if (state->tokens[i] / state->board->config->color_count == state->turn)
 			score += tmp;
 		else
