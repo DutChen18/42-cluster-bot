@@ -109,6 +109,7 @@ int main(void)
 	
 	while(1) {
 		scanf(" chips %d %d", &token_a, &token_b);
+		time_init();
 		check_consistency(&state);
 		search(&state, &move, (tokens_t) { .a = token_a, .b = token_b });
 		write_action(&move, &state);

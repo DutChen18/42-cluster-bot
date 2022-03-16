@@ -45,3 +45,4 @@ bool coord_eq(coord_t a, coord_t b)
 {
 	return a.q == b.q && a.r == b.r && a.s == b.s;
 }
+

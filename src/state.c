@@ -39,3 +39,4 @@ int8_t state_token(state_t *state, cell_t *cell)
 {
 	return state->tokens[cell - state->board->cells];
 }
+

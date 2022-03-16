@@ -32,7 +32,8 @@ typedef struct board board_t;
 typedef struct state state_t;
 typedef struct move move_t;
 typedef struct tokens tokens_t;
-typedef struct minmax_data minmax_data_t;
+typedef struct minimax minimax_t;
+typedef struct search search_t;
 typedef struct game_time game_time_t;
 
 struct tokens {
@@ -109,9 +110,14 @@ struct move {
 	gravity_t gravity;
 };
 
-struct minmax_data {
-	move_t	move;
-	int		score;
+struct minimax {
+	int mm_depth;
+	int ev_samples;
+};
+
+struct search {
+	move_t move;
+	bool timeout;
 };
 
 extern alloc_t alloc;
@@ -145,7 +151,7 @@ int8_t state_token(state_t *state, cell_t *cell);
 move_t *move_gen(size_t *size, state_t *state, tokens_t tokens);
 void search(state_t *state, move_t *move, tokens_t token);
 
-float	get_time();
-void	time_init();
+float	get_time(void);
+void	time_init(void);
 
 #endif
