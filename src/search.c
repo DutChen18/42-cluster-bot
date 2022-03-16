@@ -7,8 +7,11 @@ static const minimax_t params[] = {
 	// { .mcts_eval = true, .mm_depth = 2, .ev_samples = 200 },
 	// { .mcts_eval = true, .mm_depth = 4, .ev_samples = 20 },
 	{ .mcts_eval = false, .mm_depth = 2 },
+	{ .mcts_eval = false, .mm_depth = 3 },
 	{ .mcts_eval = false, .mm_depth = 4 },
+	{ .mcts_eval = false, .mm_depth = 5 },
 	{ .mcts_eval = false, .mm_depth = 6 },
+	{ .mcts_eval = false, .mm_depth = 7 },
 	{ .mcts_eval = false, .mm_depth = 8 },
 };
 
