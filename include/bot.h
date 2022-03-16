@@ -111,6 +111,7 @@ struct move {
 };
 
 struct minimax {
+	bool mcts_eval;
 	int mm_depth;
 	int ev_samples;
 };

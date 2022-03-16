@@ -2,17 +2,16 @@
 #include <stdlib.h>
 
 static const minimax_t params[] = {
-	//{ .mm_depth = 2, .ev_samples = 0 },
-	//{ .mm_depth = 2, .ev_samples = 50 },
-	//{ .mm_depth = 2, .ev_samples = 200 },
-	//{ .mm_depth = 4, .ev_samples = 20 },
-	{ .mm_depth = 2 },
-	{ .mm_depth = 4 },
-	{ .mm_depth = 6 },
-	{ .mm_depth = 8 },
+	// { .mcts_eval = true, .mm_depth = 2, .ev_samples = 0 },
+	// { .mcts_eval = true, .mm_depth = 2, .ev_samples = 50 },
+	// { .mcts_eval = true, .mm_depth = 2, .ev_samples = 200 },
+	// { .mcts_eval = true, .mm_depth = 4, .ev_samples = 20 },
+	{ .mcts_eval = false, .mm_depth = 2 },
+	{ .mcts_eval = false, .mm_depth = 4 },
+	{ .mcts_eval = false, .mm_depth = 6 },
+	{ .mcts_eval = false, .mm_depth = 8 },
 };
 
-/*
 static void search_random(state_t *state, int *winner, int *depth, int max_depth)
 {
 	*depth += 1;
@@ -30,7 +29,7 @@ static void search_random(state_t *state, int *winner, int *depth, int max_depth
 	search_random(state, winner, depth, max_depth - 1);
 }
 
-static float search_eval(state_t *state, int samples, int turn, int max_depth)
+static float mcts_search_eval(state_t *state, int samples, int turn, int max_depth)
 {
 	float score = 0;
 	int winner = state_winner(state);
@@ -53,9 +52,8 @@ static float search_eval(state_t *state, int samples, int turn, int max_depth)
 	}
 	return score / samples;
 }
-*/
 
-static float better_search_eval(state_t *state)
+static float deterministic_search_eval(state_t *state, int depth)
 {
 	int winner = state_winner(state);
 	if (winner == state->turn)
@@ -67,25 +65,33 @@ static float better_search_eval(state_t *state)
 		if (state->tokens[i] == -1)
 			continue;
 		int adjacent = 0;
+		int empty = 0;
 		for (int j = 0; j < 6; j++) {
 			cell_t *cell = state->board->cells[i].neighbors[j];
 			if (cell != NULL && state->tokens[i] == state_token(state, cell))
 				adjacent += 1;
+			if (cell != NULL && state_token(state, cell) == -1)
+				empty += 1;
 		}
-		float tmp = 1 + adjacent * 2;
+		float tmp = 10 + adjacent * 20 + empty * 4;
 		if (state->tokens[i] / state->board->config->color_count == state->turn)
 			score += tmp;
 		else
 			score -= tmp;
 	}
-	return score;
+	if (score > 0)
+		score += depth / 100.0f;
+	else
+		score -= depth / 100.0f;
+	return score + (random_next(&rng) % 1000) / 100000.0f;
 }
 
-static float heuristics_cluster(const minimax_t *mm, state_t *state)
+static float heuristics_cluster(const minimax_t *mm, state_t *state, int depth)
 {
-	//return search_eval(state, mm->ev_samples, state->turn, 10);
-	(void) mm;
-	return better_search_eval(state);
+	if (mm->mcts_eval)
+		return mcts_search_eval(state, mm->ev_samples, state->turn, 10);
+	else
+		return deterministic_search_eval(state, depth);
 }
 
 static float minimax_cluster(const minimax_t *mm, search_t *s, state_t *state, int depth, float alpha, float beta)
@@ -98,7 +104,7 @@ static float minimax_cluster(const minimax_t *mm, search_t *s, state_t *state, i
 		return 0;
 	}
 	if (depth == 0 || state_winner(state) >= 0)
-		return (heuristics_cluster(mm, state));
+		return (heuristics_cluster(mm, state, depth));
 	
 	move_t *moves = move_gen(&size, state, (tokens_t) { .a = -1, .b = -1 });
 	float score = -1000000.0f;
