@@ -91,6 +91,8 @@ static float deterministic_search_eval(state_t *state, int depth)
 		else
 			score -= tmp;
 	}
+	score += state->bags[state->turn] * 10;
+	score -= state->bags[!state->turn] * 10;
 	return score + (random_next(&rng) % 1000) / 1000.0f;
 }
 
