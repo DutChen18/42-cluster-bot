@@ -23,3 +23,4 @@ float	get_time(void)
 	return_time += (float) current_time.tv_usec / (float) 1000000;
 	return (return_time);
 }
+
